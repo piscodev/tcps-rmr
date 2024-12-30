@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Lato', sans-serif; /* Default font for paragraphs */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif; /* Font for headings */
+}
+
+a,button, .ui-text {
+  font-family: 'Roboto', sans-serif; /* Font for other purposes */
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom styles for HomeClient component */
+
+/* Flexbox utilities */
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+/* Sizing utilities */
+.h-screen {
+  height: 100vh;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Background colors */
+.bg-gray-100 {
+  background-color: #f7fafc; /* light gray background */
+}
+
+.bg-white {
+  background-color: #ffffff; /* white background */
+}
+
+.bg-red-500 {
+  background-color: #ef4444; /* red background */
+}
+
+/* Padding and margin utilities */
+.p-8 {
+  padding: 2rem; /* padding of 2rem (32px) */
+}
+
+.px-4 {
+  padding-left: 1rem; /* horizontal padding */
+  padding-right: 1rem; /* horizontal padding */
+}
+
+.py-2 {
+  padding-top: 0.5rem; /* vertical padding */
+  padding-bottom: 0.5rem; /* vertical padding */
+}
+
+.mt-4 {
+  margin-top: 1rem; /* margin top */
+}
+
+.mb-4 {
+  margin-bottom: 1rem; /* margin bottom */
+}
+
+/* Text utilities */
+.text-3xl {
+  font-size: 1.875rem; /* large text size */
+}
+
+.font-bold {
+  font-weight: bold; /* bold text */
+}
+
+.text-gray-600 {
+  color: #4b5563; /* medium gray text color */
+
+}
+
+.text-blue-700 {
+  color: #3b82f6; /* blue text color */
+  text-align: center;
+  align-items: center;
+}
+
+.hover\:underline:hover {
+  text-decoration: underline; /* underline on hover */
+}
+
+/* Rounded corners and shadows */
+.rounded {
+  border-radius: 0.5rem; /* rounded corners */
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* medium shadow */
+}
+
+/* globals.css */
+
+/* Add table border styling */
+.border-collapse {
+  border-collapse: collapse;
+}
+
+.border {
+  border: 1px solid #d1d5db; /* Gray border */
+}
+
+.border-b {
+  border-bottom: 1px solid #d1d5db; /* Gray border for table rows */
+}
+
+.bg-gray-100 {
+  background-color: #f7fafc; /* Light gray background for the video feed */
+}
+
+.bg-blue-700 {
+  background-color: #3b82f6; /* Dark blue for button and table header */
+}
+
+.bg-blue-600 {
+  background-color: #2563eb; /* Slightly lighter blue for button hover effect */
+}
+
+.text-white {
+  color: #ffffff; /* White text color */
+}
