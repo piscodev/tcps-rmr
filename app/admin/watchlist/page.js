@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Navbar from "@/components/adminNav";
-import Footer from "@/components/Footer";
+import Navbar from "@/app/components/adminNav";
+import Footer from "@/app/components/Footer";
 
 const AdminReportManagement = () => {
   const [reports, setReports] = useState([]);
