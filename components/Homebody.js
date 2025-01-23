@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -32,8 +31,8 @@ const Homebody = () => {
 
         {/* Image */}
         <div className="relative w-full h-64 md:h-96">
-          <Image
-            src="/assets/img/pnp.jpg"
+          <img
+            src="../../assets/img/pnp.jpg"
             alt="logo"
             layout="fill"
             objectFit="cover"
