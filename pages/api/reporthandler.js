@@ -1,21 +1,33 @@
 import pool from '../../lib/db';
-import multer from 'multer';
+// import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { initEdgeStore } from '@edgestore/server';
+import { createEdgeStoreNextHandler } from '@edgestore/server/adapters/next/pages';
 
-// Configure Multer for file uploads
-const upload = multer({
-  dest: 'uploads/', // Temporary storage location
+const es = initEdgeStore.create();
+
+const edgeStoreRouter = es.router({
+  publicFiles: es.fileBucket(),
 });
 
-// Middleware to handle file uploads
-const multerMiddleware = upload.fields([
-  { name: 'driversLicense', maxCount: 1 },
-  { name: 'vehicleRegistration', maxCount: 1 },
-  { name: 'orCr', maxCount: 1 },
-]);
+export default createEdgeStoreNextHandler({
+  router: edgeStoreRouter,
+});
+// NEEDS TO CHANGE THIS TO USE EDGE STORE
+// Configure Multer for file uploads
+// const upload = multer({
+//   dest: 'uploads/', // Temporary storage location
+// });
 
-export default async function handler(req, res) {
+// Middleware to handle file uploads
+// const multerMiddleware = upload.fields([
+//   { name: 'driversLicense', maxCount: 1 },
+//   { name: 'vehicleRegistration', maxCount: 1 },
+//   { name: 'orCr', maxCount: 1 },
+// ]);
+
+export async function handler(req, res) {
   if (req.method === 'POST') {
     // Wrap the multer middleware to work with Next.js API routes
     await new Promise((resolve, reject) => {
@@ -26,20 +38,7 @@ export default async function handler(req, res) {
     });
 
     try {
-      const {
-        fullName,
-        age,
-        sex,
-        address,
-        contactNumber,
-        isOwner,
-        reason,
-        vehicleType,
-        platenumber,
-        color,
-        description,
-        reportID,
-      } = req.body;
+      const { fullName, age, sex, address, contactNumber, isOwner, reason, vehicleType, platenumber, color, description, reportID } = req.body;
 
       // Retrieve files from Multer's temporary storage
       const driversLicenseFile = req.files?.driversLicense?.[0];
@@ -47,18 +46,22 @@ export default async function handler(req, res) {
       const orCrFile = req.files?.orCr?.[0];
 
       // Convert files to binary data
-      const driversLicense = driversLicenseFile
-        ? fs.readFileSync(path.resolve(driversLicenseFile.path))
-        : null;
-      const vehicleRegistration = vehicleRegistrationFile
-        ? fs.readFileSync(path.resolve(vehicleRegistrationFile.path))
-        : null;
-      const orCr = orCrFile ? fs.readFileSync(path.resolve(orCrFile.path)) : null;
+      // const driversLicense = driversLicenseFile
+      //   ? fs.readFileSync(path.resolve(driversLicenseFile.path))
+      //   : null;
+      // const vehicleRegistration = vehicleRegistrationFile
+      //   ? fs.readFileSync(path.resolve(vehicleRegistrationFile.path))
+      //   : null;
+      // const orCr = orCrFile ? fs.readFileSync(path.resolve(orCrFile.path)) : null;
 
-      // Clean up temporary files after reading them
-      if (driversLicenseFile) fs.unlinkSync(driversLicenseFile.path);
-      if (vehicleRegistrationFile) fs.unlinkSync(vehicleRegistrationFile.path);
-      if (orCrFile) fs.unlinkSync(orCrFile.path);
+      const driversLicense = driversLicenseFile ? await es.publicFiles.upload(driversLicenseFile) : null;
+      const vehicleRegistration = vehicleRegistrationFile ? await es.publicFiles.upload(vehicleRegistrationFile) : null;
+      const orCr = orCrFile ? await es.publicFiles.upload(orCrFile) : null;
+
+      // // Clean up temporary files after reading them
+      // if (driversLicenseFile) fs.unlinkSync(driversLicenseFile.path);
+      // if (vehicleRegistrationFile) fs.unlinkSync(vehicleRegistrationFile.path);
+      // if (orCrFile) fs.unlinkSync(orCrFile.path);
 
       // Prepare the query to insert the report data, including the binary fields
       const query = `
