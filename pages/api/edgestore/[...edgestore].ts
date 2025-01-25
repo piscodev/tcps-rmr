@@ -1,6 +1,8 @@
 import { initEdgeStore } from '@edgestore/server';
 import { createEdgeStoreNextHandler } from '@edgestore/server/adapters/next/app';
 
+console.log(`EDGE_STORE_SECRET_KEY: `,process.env.EDGE_STORE_SECRET_KEY);
+console.log(`EDGE_STORE_ACCESS_KEY: `,process.env.EDGE_STORE_ACCESS_KEY);
 const es = initEdgeStore.create();
 
 /**

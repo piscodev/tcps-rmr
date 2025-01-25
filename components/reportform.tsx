@@ -151,8 +151,7 @@ const ReportForm = () =>
     opacity: `${timer / 30}`,
     transition: 'opacity 1s ease-out',
   }
-  console.log(`EDGE_STORE_SECRET_KEY: `,process.env.EDGE_STORE_SECRET_KEY);
-  console.log(`EDGE_STORE_ACCESS_KEY: `,process.env.EDGE_STORE_ACCESS_KEY);
+  
 
   return (
     <div className="container mx-auto p-6 mt-6">
