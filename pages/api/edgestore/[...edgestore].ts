@@ -14,6 +14,7 @@ const edgeStoreRouter = es.router({
  * Create the handler for the Edge Store API.
  */
 const handler = createEdgeStoreNextHandler({
+  logLevel: 'debug',
   router: edgeStoreRouter,
 });
 
