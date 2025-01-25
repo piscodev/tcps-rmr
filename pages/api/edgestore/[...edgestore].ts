@@ -20,7 +20,8 @@ const handler = createEdgeStoreNextHandler({
 /**
  * Default export for the API route.
  */
-export default handler;
+//export default handler;
+export { handler as GET, handler as POST };
 
 /**
  * Specify that this API route uses the Edge Runtime.
