@@ -1,67 +1,103 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+'use client'
 
-const ReportForm = () => {
-  const [formData, setFormData] = useState({
+import * as React from 'react';
+
+import { v4 as uuidv4 } from 'uuid';
+import { useEdgeStore } from "../lib/edgestore";
+
+interface FormData {
+  fullName: string;
+  age: string;
+  sex: string;
+  address: string;
+  contactNumber: string;
+  isOwner: string;
+  driversLicense: string;
+  vehicleRegistration: string;
+  orCr: string;
+  reason: string;
+  vehicleType: string;
+  platenumber: string;
+  color: string;
+  description: string;
+}
+
+const ReportForm = () =>
+{
+  const { edgestore } = useEdgeStore()
+
+  const [message, setMessage] = React.useState('')
+  const [timer, setTimer] = React.useState(30)
+  const [alertColor, setAlertColor] = React.useState('bg-green-100') // Default color for success
+  const [isModalOpen, setIsModalOpen] = React.useState(false) // State to control modal visibility
+  const [reportID, setReportID] = React.useState('')
+
+  const [dvrLicenseVal, setDvrLicense] = React.useState("") // url
+  const [fileDL, setFileDL] = React.useState<File>()
+  const [progress1, setProgress1] = React.useState(0)
+
+  const [vRegistrationVal, setVRegistration] = React.useState("") // url
+  const [fileVR, setFileVR] = React.useState<File>()
+  const [progress2, setProgress2] = React.useState(0)
+
+  const [orCrVal, setOrCr] = React.useState("") // url
+  const [fileOR, setFileOR] = React.useState<File>()
+  const [progress3, setProgress3] = React.useState(0)
+
+  const [formData, setFormData] = React.useState<FormData>({
     fullName: '',
     age: '',
     sex: '',
     address: '',
     contactNumber: '',
     isOwner: 'No',
-    driversLicense: null,
-    vehicleRegistration: null,
-    orCr: null,
+    driversLicense: "",
+    vehicleRegistration: "",
+    orCr: "",
     reason: 'Stolen? Involved in an incident/accident?',
     vehicleType: 'Motorcycle',
     platenumber: '',
     color: '',
     description: '',
-  });
+  })
 
-  const [message, setMessage] = useState('');
-  const [timer, setTimer] = useState(30);
-  const [alertColor, setAlertColor] = useState('bg-green-100'); // Default color for success
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
-  const [reportID, setReportID] = useState('');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) =>
+  {
+    e.preventDefault()
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files?.[0] || value || null });
-  };
+    const generatedReportID = `REP-${uuidv4().slice(0, 8).toUpperCase()}` // Generate unique report ID
+    setReportID(generatedReportID) // Set the generated report ID
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const formDataToSend = new FormData()
+    Object.keys(formData).forEach((key) =>
+    {
+      if (key !== 'driversLicense' && key !== 'vehicleRegistration' && key !== 'orCr')
+        formDataToSend.append(key, formData[key as keyof FormData])
+    })
+    formDataToSend.append('reportID', generatedReportID)
+    if (formData.isOwner === 'Yes')
+    {
+      if (dvrLicenseVal === "" || vRegistrationVal === "" || orCrVal === "")
+        return alert('Please upload all required files for verification purposes!')
 
-    const generatedReportID = `REP-${uuidv4().slice(0, 8).toUpperCase()}`; // Generate unique report ID
-    setReportID(generatedReportID); // Set the generated report ID
-
-    // Create FormData to handle file and text fields
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (key === 'driversLicense' || key === 'vehicleRegistration' || key === 'orCr') {
-        // Append file fields as files
-        if (formData[key]) formDataToSend.append(key, formData[key]);
-      } else {
-        // Append text fields as text
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-    formDataToSend.append('reportID', generatedReportID);
+      formDataToSend.append('driversLicense', dvrLicenseVal)
+      formDataToSend.append('vehicleRegistration', vRegistrationVal)
+      formDataToSend.append('orCr', orCrVal)
+    }
 
     try {
-      const response = await fetch('/api/reporthandler', {
+      const response = await fetch('api/reporthandler', {
         method: 'POST',
-        body: formDataToSend, // Send FormData
-      });
+        body: formDataToSend,
+      })
 
-      if (response.ok) {
-        const data = await response.json();
-        setMessage(`Report submitted successfully! Your report ID is ${generatedReportID}.`);
-        setAlertColor('bg-green-100'); // Green for success
-        setIsModalOpen(true); // Open modal on success
-        setTimer(30);
+      if (response.ok)
+      {
+        //const data = await response.json()
+        setMessage(`Report submitted successfully! Your report ID is ${generatedReportID}.`)
+        setAlertColor('bg-green-100') // Green for success
+        setIsModalOpen(true) // Open modal on success
+        setTimer(30)
         setFormData({
           fullName: '',
           age: '',
@@ -69,52 +105,52 @@ const ReportForm = () => {
           address: '',
           contactNumber: '',
           isOwner: 'No',
-          driversLicense: null,
-          vehicleRegistration: null,
-          orCr: null,
+          driversLicense: "",
+          vehicleRegistration: "",
+          orCr: "",
           reason: '',
           vehicleType: 'Motorcycle',
           platenumber: '',
           color: '',
           description: '',
-        });
+        })
       } else {
-        const error = await response.json();
-        setMessage(`Error: ${error.error}`);
-        setAlertColor('bg-red-100'); // Red for error
-        setIsModalOpen(true); // Open modal on error
+        const error = await response.json()
+        setMessage(`Error: ${error.error}`)
+        setAlertColor('bg-red-100') // Red for error
+        setIsModalOpen(true) // Open modal on error
       }
     } catch (err) {
-      setMessage('An unexpected error occurred. Please try again later.');
-      setAlertColor('bg-red-100'); // Red for error
-      setIsModalOpen(true); // Open modal on error
+      setMessage('An unexpected error occurred. Please try again later.')
+      setAlertColor('bg-red-100') // Red for error
+      setIsModalOpen(true) // Open modal on error
     }
-  };
+  }
+
+  const handleChange = (e) => setFormData({...formData, [e.target.name]: e.target.value})
+  const handleCloseModal = () => setIsModalOpen(false) // Close the modal when the user clicks close
+  const handleCopyCode = () =>
+  {
+    navigator.clipboard.writeText(reportID) // Copy the report ID to clipboard
+    alert('Report ID copied to clipboard!') // Show success alert
+  }
 
   // Update the alert box color opacity based on the timer
-  useEffect(() => {
-    if (timer === 0) return; // Stop when timer reaches 0
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1); // Decrease timer every second
-    }, 1000);
+  React.useEffect(() =>
+  {
+    if (timer === 0)
+      return // Stop when timer reaches 0
 
-    return () => clearInterval(interval);
-  }, [timer]);
+    const interval = setInterval(() => { setTimer((prev) => prev - 1) }, 1000) // Decrease timer every second 
+
+    return () => clearInterval(interval)
+  }, [timer])
 
   // Dynamically reduce opacity of the modal alert over time
   const alertStyle = {
     opacity: `${timer / 30}`,
     transition: 'opacity 1s ease-out',
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal when the user clicks close
-  };
-
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(reportID); // Copy the report ID to clipboard
-    alert('Report ID copied to clipboard!'); // Show success alert
-  };
+  }
 
   return (
     <div className="container mx-auto p-6 mt-6">
@@ -213,28 +249,107 @@ const ReportForm = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Driver's License</label>
               <input
                 type="file"
+                id="driversLicense"
                 name="driversLicense"
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFileDL(e.target.files?.[0])
+                }}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
               />
+
+              <div className="h-[6px] w-44 border overflow-hidden">
+                <div
+                  className="h-full bg-black transition-all duration-150"
+                  style={{ width: `${progress1}%` }}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (fileDL) {
+                    const res1 = await edgestore.publicFiles.upload({
+                      file: fileDL,
+                      onProgressChange: (progress1) => {
+                        setProgress1(progress1)
+                      },
+                    })
+                    setDvrLicense(res1.url)
+                  }
+                }}
+              >
+                Upload Driver's License
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">Vehicle Registration</label>
               <input
                 type="file"
                 name="vehicleRegistration"
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFileVR(e.target.files?.[0])
+                }}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
               />
+
+              <div className="h-[6px] w-44 border overflow-hidden">
+                <div
+                  className="h-full bg-black transition-all duration-150"
+                  style={{ width: `${progress2}%` }}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (fileVR) {
+                    const res2 = await edgestore.publicFiles.upload({
+                      file: fileVR,
+                      onProgressChange: (progress2) => {
+                        setProgress2(progress2)
+                      },
+                    })
+                    setVRegistration(res2.url)
+                  }
+                }}
+              >
+                Upload Vehicle Registration
+              </button>
             </div>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">OR/CR</label>
               <input
                 type="file"
                 name="orCr"
-                onChange={handleChange}
+                onChange={(e) => {
+                  setFileOR(e.target.files?.[0])
+                }}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight"
               />
+
+              <div className="h-[6px] w-44 border overflow-hidden">
+                <div
+                  className="h-full bg-black transition-all duration-150"
+                  style={{ width: `${progress3}%` }}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (fileOR) {
+                    const res3 = await edgestore.publicFiles.upload({
+                      file: fileOR,
+                      onProgressChange: (progress3) => {
+                        setProgress3(progress3)
+                      },
+                    })
+                    setOrCr(res3.url)
+                  }
+                }}
+              >
+                Upload OR/CR
+              </button>
             </div>
           </>
         )}
@@ -343,7 +458,7 @@ const ReportForm = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ReportForm;
+export default ReportForm

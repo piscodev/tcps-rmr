@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,7 +19,6 @@ const Homebody = () => {
           <div className="flex space-x-4">
             <Link href="#" className="px-6 py-2 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-200">
                 Learn More
-             
             </Link>
 
             <Link href="/file-report" className="px-6 py-2 bg-red-400 text-white rounded-lg shadow-md hover:bg-red-600 transition duration-200">
@@ -32,10 +32,9 @@ const Homebody = () => {
         {/* Image */}
         <div className="relative w-full h-64 md:h-96">
           <img
-            src="../../assets/img/pnp.jpg"
+            src="assets/img/pnp.jpg"
             alt="logo"
             layout="fill"
-            objectFit="cover"
             className="rounded-lg shadow-md"
           />
         </div>
