@@ -9,6 +9,7 @@ const filereport = () => {
   return (
     <>
     <EdgeStoreProvider>
+      
         <div className="flex flex-col min-h-screen">
           {/* Navigation */}
           <Nav />
